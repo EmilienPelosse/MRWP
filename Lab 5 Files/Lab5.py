@@ -10,19 +10,24 @@ with open('Friendship-network_data_2013.csv', newline='') as csvfile:
     for row in spamreader:
         G.add_edge(row[0], row[1])
 
+connected_components = list(nx.connected_components(G))
+giant_component_nodes = max(connected_components, key=len)
 
-print(nx.spring_layout(G))
+giant_component = G.subgraph(giant_component_nodes)
+print(giant_component)
+
+print(nx.spring_layout(giant_component))
 # Layout for visualization
-positions = nx.spring_layout(G)
+positions = nx.spring_layout(giant_component)
 
 # Choose nodes
-nodes = list(G.nodes())
+nodes = list(giant_component.nodes())
 groupA = nodes[:10]       # Dakota supporters
 groupB = nodes[10:20]    # Opponent supporters
 
 # Run simulation
-data = en.graphModelRun(G, 100, groupA, groupB)
+data = en.graphModelRun(giant_component, 100, groupA, groupB)
 
 # Visualize
-viz.showGraphDynamic(G, data, positions, "TEST")
+viz.showGraphDynamic(giant_component, data, positions, "TEST")
 viz.showData(data, "TEST")
